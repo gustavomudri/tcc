@@ -1,0 +1,302 @@
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+% Modelo de TCC do curso de Engenharia de Controle e Automação - UFSC/Campus Blumenau
+% Autor: Ciro André Pitz
+% Revisão: Brenda Teresa Porto de Matos
+% O presente modelo foi obtido a partir do modelo desenvolvido por Alisson Lopes Furlani disponível na BU/UFSC.
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+
+\documentclass[
+12pt,				% tamanho da fonte
+%openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+oneside,			% para impressão no anverso. Oposto a twoside
+a4paper,			% tamanho do papel. 
+chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+% -- opções do pacote babel --
+english,			% idioma adicional para hifenização
+brazil				% o último idioma é o principal do documento
+]{abntex2}
+
+\usepackage{configs/eca_ufsc_bnu} % personalização da ABNTEX2 
+\addbibresource{pos_textual/referencias.bib} % Seus arquivos de referências
+
+%---------------------------------------------------------------------------------------------
+%--------- DADOS BÁSICOS DO TCC (Preencher todos) -------------------------------------
+%---------------------------------------------------------------------------------------------
+%Substituir 'Nome completo do autor' pelo seu nome.
+\autor{Gustavo Storithont Mudri}
+% FIXME Substituir 'Título do trabalho' pelo título da trabalho.
+\titulo{Confecção de um Braço robótico controlador por meio do algoritmo CLIK e observador}
+% Substituir 'Subtítulo (se houver)' pelo subtítulo da trabalho. 
+% Se não houver subtítulo, basta deletar o texto.
+\subtitulo{}
+
+\orientador{Prof. Ebrahim, Dr.}
+% Se for orientado por uma mulher, comente a linha acima e descomente a linha a seguir.
+% \orientador[Orientadora]{Profa. Nome, Dra.}
+
+% Caso não tenha coorientador, comente a linha a seguir.
+\coorientador{Prof. Leonardo Mejia, Dr.}
+% Se for coorientado por uma mulher, comente a linha acima e descomente a linha a seguir.
+% \coorientador[Coorientadora]{Profa. Nome, Dra.}
+
+\dia{dia}
+\mes{mês}
+\ano{2026}
+\local{Blumenau}
+\formacao{Engenheiro de Controle e Automação}
+% Se for mulher, comente a linha acima e descomente a linha a seguir.
+%\formacao{Engenheira de Controle e Automação}
+
+\bancanomea{Prof. Nome, Dr.} %Primeiro membro da banca (normalmente o orientador). Altere as abreviações para o feminino (exemplo: Profa., Dra.) quando for o caso.
+\bancainsta{Nome da instituição ou empresa} %Nome da instituição (UFSC, por exemplo) ou empresa do primeiro membro da banca
+
+\bancanomeb{Prof. Nome, Dr.} %Segundo membro da banca. Altere as abreviações para o feminino (exemplo: Profa., Dra.) quando for o caso.
+\bancainstb{Nome da instituição ou empresa} %Nome da instituição (UFSC, por exemplo) ou empresa do segundo membro da banca
+
+\bancanomec{Prof. Nome, Dr.} %Terceiro membro da banca. Altere as abreviações para o feminino (exemplo: Profa., Dra.) quando for o caso.
+\bancainstc{UFSC} %Nome da instituição (UFSC, por exemplo) ou empresa do terceiro membro da banca
+
+%Resumo e palavras-chave do trabalho
+\resumotcc{No presente trabalho, elabora-se a modelagem e confecção de um braço robótico manipulador com configuração inicial de 4 graus de liberdade (4R), com vistas a expansões modulares futuras. Diante da natureza de malha fechada ("caixa-preta") dos controladores comerciais integrados das juntas, os quais operam sob o protocolo de comunicação industrial CPRCANv2 e impossibilitam o ajuste direto de seus parâmetros PID internos, propõe-se uma estratégia de controle em nível de software para a mitigação do erro posicional. Para tanto, desenvolveu-se um algoritmo de Cinemática Inversa em Malha Fechada (CLIK - Closed-Loop Inverse Kinematics), que utiliza a formulação da Matriz Jacobiana e sua Pseudo-inversa para calcular correções angulares iterativas baseadas no feedback posicional real dos encoders. O ecossistema ROS 2 foi adotado como o middleware central para segmentar e orquestrar de forma modular as responsabilidades do sistema através de nós computacionais independentes (gerador de trajetória, discretizador, solucionador cinemático, interface de hardware CAN, supervisor de erro e módulo de análise). Os resultados demonstram que a abordagem em malha fechada via software é capaz de contornar as limitações de hardware, forçando o erro de rastreamento do efetuador final a convergir para zero e garantindo a precisão posicional do manipulador.}
+\palavraschave{R3, CLIK, Braço Robótico, ROS 2.} 
+
+%Abstract e keywords do trabalho
+\abstracttcc{In the present work, the modeling and construction of a robotic manipulator arm with an initial configuration of 4 degrees of freedom (4R) are developed, aiming for future modular expansions. Given the closed-loop ("black-box") nature of the joints' integrated commercial controllers, which operate under the CPRCANv2 industrial communication protocol and prevent direct tuning of their internal PID parameters, a software-level control strategy is proposed to mitigate positional error. To this end, a Closed-Loop Inverse Kinematics (CLIK) algorithm was developed, utilizing the Jacobian Matrix formulation and its Pseudo-inverse to compute iterative angular corrections based on real-time positional feedback from the encoders. The ROS 2 ecosystem was adopted as the central middleware to segment and orchestrate the system's responsibilities in a modular fashion through independent computational nodes (trajectory generator, discretizer, kinematics solver, CAN hardware interface, error supervisor, and analysis module). The results demonstrate that the software-based closed-loop approach is capable of bypassing hardware limitations, forcing the end-effector tracking error to converge to zero and ensuring the positional accuracy of the manipulator.}
+\keywords{R3, CLIK, Robotic Arm, ROS 2.}
+
+%Agradecimentos (opcional). Caso não queira inserir, deixe em branco (\agradecimentostcc{} )
+\agradecimentostcc{
+Aos meus amigos, Daniel Krepsky, João Pedro Cardoso, Lucas Belz e Fernanda Frainer, por me motivarem.
+Ao professor Marcio Rocha por me ajudar na prototipagem das peças.
+Ao João Pedro Cardoso por usinar as peças.
+Ao professor Marcos Matsuo por tirar duvidas sobre maneiras de feedback para o IKCL
+Ao professor Leonardo Mejia e Ebrahim El Youssef pela orientação.
+
+}
+
+%Epígrafe (opcional). Caso não queira inserir, deixe em branco (\epigrafetcc{} )
+\epigrafetcc{Se eu vi mais longe, foi por estar sobre os ombros de gigantes.
+(Newton, 1675)}
+
+%Decatória (opcional). Caso não queira inserir, deixe em branco (\dedicatoriatcc{} )
+\dedicatoriatcc{
+Dedico este trabalho aos meus pais, que abdicaram de tantos sonhos para que eu pudesse realizar os meus.
+}
+
+%Lista de quadros
+%Além de figuras e tabelas, o TCC contém quadros? Caso afirmativo digite sim ou deixe em branco para não (\contemquadros{}).
+\contemquadros{sim}
+
+%Lista de siglas (opcional).
+%Deseja incluir lista de abreviaturas e siglas? Caso afirmativo digite sim ou deixe em branco para não (\contemsiglas{}).
+\contemsiglas{sim}
+
+%Lista de símbolos (opcional).
+%Deseja incluir lista de símbolos? Caso afirmativo digite sim ou deixe em branco para não (\contemsimbolos{}).
+\contemsimbolos{sim}
+
+%-------------------------FIM DOS DADOS BÁSICOS DO TCC--------------------------------------------
+
+
+
+
+% ajusta espaçamento das listas itemize e enumerate
+\setitemize{topsep=0pt,itemsep=0pt,leftmargin=\parindent+\labelwidth-\labelsep}
+\setenumerate{topsep=0pt,itemsep=0pt,leftmargin=\parindent+\labelwidth-\labelsep}
+
+% define a macro \Autoref to allow multiple references to be passed to \autoref
+\makeatletter
+\newcommand\Autoref[1]{\@first@ref#1,@}
+\def\@throw@dot#1.#2@{#1}% discard everything after the dot
+\def\@set@refname#1{%    % set \@refname to autoefname+s using \getrefbykeydefault
+	\edef\@tmp{\getrefbykeydefault{#1}{anchor}{}}%
+	\xdef\@tmp{\expandafter\@throw@dot\@tmp.@}%
+	\ltx@IfUndefined{\@tmp autorefnameplural}%
+	{\def\@refname{\@nameuse{\@tmp autorefname}s}}%
+	{\def\@refname{\@nameuse{\@tmp autorefnameplural}}}%
+}
+\def\@first@ref#1,#2{%
+	\ifx#2@\autoref{#1}\let\@nextref\@gobble% only one ref, revert to normal \autoref
+	\else%
+	\@set@refname{#1}%  set \@refname to autoref name
+	\@refname~\ref{#1}% add autoefname and first reference
+	\let\@nextref\@next@ref% push processing to \@next@ref
+	\fi%
+	\@nextref#2%
+}
+\def\@next@ref#1,#2{%
+	\ifx#2@ e~\ref{#1}\let\@nextref\@gobble% at end: print e+\ref and stop
+	\else, \ref{#1}% print  ,+\ref and continue
+	\fi%
+	\@nextref#2%
+}
+\makeatother
+
+% Cria comando para referenciar Anexo automaticamente \refanexo
+\newcommand{\refanexo}[1]{\hyperref[#1]{Anexo~\ref{#1}}}
+
+% Define comandos para tabelas que permite ajustar o tamanho da coluna e manter alinhamento C, R ou L
+%\newcommand{\PreserveBackslash}[1]{\let\temp=\\#1\let\\=\temp}
+\newcolumntype{C}[1]{>{\centering\let\arraybackslash}m{#1}}
+\newcolumntype{R}[1]{>{\RaggedLeft\let\arraybackslash}m{#1}}
+\newcolumntype{L}[1]{>{\RaggedRight\let\arraybackslash}m{#1}}
+
+
+% ---
+% Filtering and Mapping Bibliographies
+% ---
+\DeclareSourcemap{
+	\maps[datatype=bibtex]{
+		% remove fields that are always useless
+		\map{
+			\step[fieldset=abstract, null]
+			\step[fieldset=pagetotal, null]
+			\step[fieldset=doi, null]
+		}
+		% remove URLs for types that are primarily printed
+		\map{
+			\pernottype{software}
+			\pernottype{online}
+			\pernottype{report}
+			\pernottype{techreport}
+			\pernottype{standard}
+			\pernottype{manual}
+			\pernottype{misc}
+			\step[fieldset=url, null]
+			\step[fieldset=urldate, null]
+		}
+		\map{
+			\pertype{inproceedings}
+			% remove mostly redundant conference information
+			%\step[fieldset=venue, null]
+			%\step[fieldset=eventdate, null]
+			%\step[fieldset=eventtitle, null]
+			% do not show ISBN for proceedings
+			\step[fieldset=isbn, null]
+			% Citavi bug
+			%\step[fieldset=volume, null]
+		}
+	}
+}
+% ---
+
+\preambulo
+{%
+	Trabalho de Conclusão de Curso de Graduação em Engenharia de Controle e Automação do Centro Tecnológico, de Ciências Exatas e Educação da Universidade Federal de Santa Catarina como requisito para a obtenção~do~título~de~\imprimirformacao.
+}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+% ---
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+% informações do PDF
+\makeatletter
+\hypersetup{
+	%pagebackref=true,
+	pdftitle={\@title}, 
+	pdfauthor={\@author},
+	pdfsubject={\imprimirpreambulo},
+	pdfcreator={LaTeX with abnTeX2},
+	pdfkeywords={ufsc, latex, abntex2}, 
+	colorlinks=true,       		% false: boxed links; true: colored links
+	linkcolor=black,%blue,          	% color of internal links
+	citecolor=black,%blue,        		% color of links to bibliography
+	filecolor=black,%magenta,      		% color of file links
+	urlcolor=blue,
+	bookmarksdepth=4
+}
+\makeatother
+% ---
+
+% Definição das siglas e símbolos
+\input{pre_textual/siglas_simbolos}
+% compila a lista de abreviaturas e siglas e a lista de símbolos
+\makenoidxglossaries 
+
+% compila o indice
+\makeindex
+
+
+% ------------------------------------------------------------------------------------------------
+% --------------------------INÍCIO DO DOCUMENTO---------------------------------------------
+% ------------------------------------------------------------------------------------------------
+\begin{document}
+	
+	% Seleciona o idioma do documento (conforme pacotes do babel)
+	%\selectlanguage{english}
+	\selectlanguage{brazil}
+	
+	% Retira espaço extra obsoleto entre as frases.
+	\frenchspacing 
+	
+	% Espaçamento 1.5 entre linhas
+	\OnehalfSpacing
+	
+	% Corrige justificação
+	%\sloppy
+	
+
+	%Elementos pré-textuais
+	% \pretextual %a macro \pretextual é acionado automaticamente no início de \begin{document}
+	% Capa, folha de rosto, ficha bibliografica, errata, folha de aprovação
+	% Dedicatória, agradecimentos, epígrafe (opcional), resumos, listas
+	\input{pre_textual/pretextual}
+
+	% Elementos textuais
+	\textual
+	
+	% 1 - Introdução
+	\include{capitulos/cap_1}
+	
+	% 2 - Desenvolvimento
+	\include{capitulos/cap_2}
+	
+	% 3 - Seção
+	\include{capitulos/cap_3}
+	
+	% 4 - Conclusão
+	\include{capitulos/cap_4}
+	
+	
+	% Elementos pós-textuais
+	\postextual
+	
+	
+	% Referências bibliográficas
+	\begingroup
+	    \printbibliography[title=REFERÊNCIAS]
+	\endgroup
+	
+	
+	
+	%Reconfiguração do título para apêndices e anexos
+	 \renewcommand{\ABNTEXchapterupperifneeded}[1]{#1} 
+	\makeatletter
+	\settocpreprocessor{chapter}{%
+      \let\tempf@rtoc\f@rtoc%
+      \def\f@rtoc{%
+      \texorpdfstring{{\tempf@rtoc}}{\tempf@rtoc}}%
+      }
+    \makeatother
+	
+	
+	% Apêndices
+    \begin{apendicesenv}
+    	%\partapendices* 
+    	\input{pos_textual/apendice_a}
+    \end{apendicesenv}
+
+    % Anexos
+    \begin{anexosenv}
+    	%\partanexos*
+    	\input{pos_textual/anexo_a}
+    \end{anexosenv}
+
+\end{document}
